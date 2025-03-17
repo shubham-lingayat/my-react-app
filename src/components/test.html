@@ -1,0 +1,189 @@
+<style>
+    .testimonial-carousel-container {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+  
+  
+    .testimonial-carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+  
+  
+    .testimonial-carousel-slide {
+      box-sizing: border-box;
+    }
+  
+  
+    .testimonial-carousel-slide img {
+      width: 100%;
+      display: block;
+    }
+  
+  
+    .testimonial-carousel-nav {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+    }
+  
+  
+    .testimonial-carousel-nav button {
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  
+  
+    .testimonial-carousel-dots {
+      text-align: center;
+      margin-top: 10px;
+    }
+  
+  
+    .testimonial-carousel-dots button {
+      background: #bbb;
+      border: none;
+      width: 10px;
+      height: 10px;
+      margin: 5px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+  
+  
+    .testimonial-carousel-dots button.active {
+      background: #333;
+    }
+
+            .testimonial-carousel-slide.active {
+        opacity: 1;
+        transform: scale(1);
+        }
+
+        .testimonial-carousel-slide.center {
+        transform: scale(1.1);
+        }
+
+  
+  
+    @media (min-width: 768px) {
+      .testimonial-carousel-slide {
+        min-width: 50%;
+      }
+    }
+  
+  
+    @media (min-width: 1024px) {
+      .testimonial-carousel-slide {
+        min-width: 33.33%;
+      }
+    }
+  
+  
+    @media (max-width: 767px) {
+      .testimonial-carousel-slide {
+        min-width: 100%;
+      }
+    }
+  </style>
+  
+  <!-- ################### -->
+  <div class="testimonial-carousel-container">
+    <div class="testimonial-carousel-track">
+      <div class="testimonial-carousel-slide">1</div>
+      <div class="testimonial-carousel-slide">2</div>
+      <div class="testimonial-carousel-slide">3</div>
+      <div class="testimonial-carousel-slide">4</div>
+      <div class="testimonial-carousel-slide">5</div>
+      <div class="testimonial-carousel-slide">6</div>
+    </div>
+    <div class="testimonial-carousel-nav">
+      <button class="prev">❮</button>
+      <button class="next">❯</button>
+    </div>
+    <div class="testimonial-carousel-dots"></div>
+  </div>
+  <!-- ################### -->
+  
+  <script>
+    const track = document.querySelector(".testimonial-carousel-track");
+const slides = Array.from(track.children);
+const nextButton = document.querySelector(".next");
+const prevButton = document.querySelector(".prev");
+const dotsNav = document.querySelector(".testimonial-carousel-dots");
+
+const updateSlideWidth = () => slides[0].getBoundingClientRect().width;
+
+let currentIndex = 0;
+
+const moveToSlide = (index) => {
+  const slidesToShow = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+  const maxIndex = slides.length - slidesToShow;
+
+  if (index < 0) {
+    currentIndex = maxIndex;
+  } else if (index > maxIndex) {
+    currentIndex = 0;
+  } else {
+    currentIndex = index;
+  }
+
+  track.style.transform = "translateX(-" + updateSlideWidth() * currentIndex + "px)";
+  
+  updateActiveAndCenterSlides();
+  updateDots();
+};
+
+const updateActiveAndCenterSlides = () => {
+  slides.forEach(slide => slide.classList.remove("active", "center"));
+
+  const slidesToShow = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+  for (let i = 0; i < slidesToShow; i++) {
+    const slideIndex = currentIndex + i;
+    if (slides[slideIndex]) {
+      slides[slideIndex].classList.add("active");
+    }
+  }
+
+  if (slidesToShow === 3) {
+    const centerIndex = currentIndex + 1;
+    if (slides[centerIndex]) {
+      slides[centerIndex].classList.add("center");
+    }
+  } else if (slidesToShow === 1) {
+    if (slides[currentIndex]) {
+      slides[currentIndex].classList.add("center");
+    }
+  }
+};
+
+const updateDots = () => {
+  dotsNav.innerHTML = "";
+  const slidesToShow = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+  const dotsCount = slides.length - slidesToShow + 1;
+
+  for (let i = 0; i < dotsCount; i++) {
+    const button = document.createElement("button");
+    button.classList.toggle("active", i === currentIndex);
+    button.addEventListener("click", () => moveToSlide(i));
+    dotsNav.appendChild(button);
+  }
+};
+
+window.addEventListener("resize", () => moveToSlide(currentIndex));
+updateDots();
+moveToSlide(0);
+
+nextButton.addEventListener("click", () => moveToSlide(currentIndex + 1));
+prevButton.addEventListener("click", () => moveToSlide(currentIndex - 1));
+
+  </script>
+  
